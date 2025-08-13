@@ -66,8 +66,8 @@ all: main-build
 main-build: foc_system_test1.0.elf secondary-outputs
 
 # Tool invocations
-foc_system_test1.0.elf foc_system_test1.0.map: $(OBJS) $(USER_OBJS) D:\work_code\foc_system_test1.0\STM32F103ZETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "foc_system_test1.0.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"D:\work_code\foc_system_test1.0\STM32F103ZETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="foc_system_test1.0.map" -Wl,--gc-sections -static -u _printf_float --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+foc_system_test1.0.elf foc_system_test1.0.map: $(OBJS) $(USER_OBJS) D:\work_code\FOC_PID_System\STM32F103ZETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "foc_system_test1.0.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"D:\work_code\FOC_PID_System\STM32F103ZETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="foc_system_test1.0.map" -Wl,--gc-sections -static -u _printf_float --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
