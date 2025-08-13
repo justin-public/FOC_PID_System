@@ -1611,24 +1611,24 @@ void FOC_control(void){
         if(elapsed > 8000) {  // 8초마다
             switch(speed_step) {
                 case 0:
-                    target_iq = 0.8f;
-                    printf("\r\n*** VERY FAST (Iq=0.8A) - SHOULD BE VISIBLE! ***\r\n");
+                    target_iq = 0.2f;
+                    printf("\r\n*** SLOW (Iq=0.2A) -***\r\n");
                     break;
                 case 1:
                     target_iq = 0.05f;
                     printf("\r\n*** VERY SLOW (Iq=0.05A) - ALMOST STOP! ***\r\n");
                     break;
                 case 2:
-                    target_iq = 1.2f;
-                    printf("\r\n*** MAXIMUM (Iq=1.2A) - FASTEST POSSIBLE! ***\r\n");
+                    target_iq = 2.5f;               // 1.2A   --> 3.0A 수정
+                    printf("\r\n*** MAXIMUM (Iq=2.5A) - FASTEST POSSIBLE! ***\r\n");
                     break;
                 case 3:
-                    target_iq = 0.3f;
-                    printf("\r\n*** MEDIUM (Iq=0.3A) - NORMAL SPEED ***\r\n");
+                    target_iq = 0.8f;
+                    printf("\r\n*** MEDIUM (Iq=0.8A) - NORMAL SPEED ***\r\n");
                     break;
                 case 4:
-                    target_iq = 0.02f;
-                    printf("\r\n*** CRAWLING (Iq=0.02A) - BARELY MOVING! ***\r\n");
+                    target_iq = 0.01f;
+                    printf("\r\n*** CRAWLING (Iq=0.01A) - BARELY MOVING! ***\r\n");
                     break;
             }
             speed_step = (speed_step + 1) % 5;
@@ -1668,7 +1668,8 @@ void FOC_control(void){
     // 7. 빠른 전류 지령값 변화
     static float smooth_iq_ref = 0.1f;
 
-    float iq_change_rate = 2.0f;  // 2.0 A/s (빠르게!)
+    //float iq_change_rate = 2.0f;  // 2.0 A/s (빠르게!)
+    float iq_change_rate = 5.0f;
     float max_change = iq_change_rate * 0.005f;
     float iq_error_ref = target_iq - smooth_iq_ref;
 
@@ -1704,14 +1705,28 @@ void FOC_control(void){
     }
 
     // 적분 제한
-    if(id_integral > 0.5f) id_integral = 0.5f;
-    if(id_integral < -0.5f) id_integral = -0.5f;
-    if(iq_integral > 0.5f) iq_integral = 0.5f;
-    if(iq_integral < -0.5f) iq_integral = -0.5f;
+    //if(id_integral > 0.5f) id_integral = 0.5f;
+    //if(id_integral < -0.5f) id_integral = -0.5f;
+    //if(iq_integral > 0.5f) iq_integral = 0.5f;
+    //if(iq_integral < -0.5f) iq_integral = -0.5f;
+
+    // 적분 제한
+    if(id_integral > 0.2f) id_integral = 0.2f;
+    if(id_integral < -0.2f) id_integral = -0.2f;
+    if(iq_integral > 0.2f) iq_integral = 0.2f;
+    if(iq_integral < -0.2f) iq_integral = -0.2f;
 
     // 강력한 PID 게인 (빠른 응답)
-    float kp = 1.2f;   // 강력한 비례 게인
-    float ki = 6.0f;   // 강력한 적분 게인
+    //float kp = 1.2f;   // 강력한 비례 게인
+    //float ki = 6.0f;   // 강력한 적분 게인
+
+    // PID 게인 조정 (안정성을 위해) (정상)
+    //float kp = 1.5f;   // 강력한 비례 게인
+    //float ki = 8.0f;   // 강력한 적분 게인
+
+    float kp = 2.0f;   // 강력한 비례 게인
+    float ki = 10.0f;   // 강력한 적분 게인
+
 
     float vd_command = kp * id_error_filt + ki * id_integral;
     float vq_command = kp * iq_error_filt + ki * iq_integral;
@@ -1720,10 +1735,27 @@ void FOC_control(void){
     static float vd_smooth = 0, vq_smooth = 0;
 
     // 전압 제한 (넉넉하게)
-    if(vd_command > 4.0f) vd_command = 4.0f;
-    if(vd_command < -4.0f) vd_command = -4.0f;
-    if(vq_command > 4.0f) vq_command = 4.0f;
-    if(vq_command < -4.0f) vq_command = -4.0f;
+    //if(vd_command > 4.0f) vd_command = 4.0f;
+    //if(vd_command < -4.0f) vd_command = -4.0f;
+    //if(vq_command > 4.0f) vq_command = 4.0f;
+    //if(vq_command < -4.0f) vq_command = -4.0f;
+    // 전압 제한 수정 3번
+    //if(vd_command > 10.0f) vd_command = 10.0f;
+    //if(vd_command < -10.0f) vd_command = -10.0f;
+    //if(vq_command > 10.0f) vq_command = 10.0f;
+    //if(vq_command < -10.0f) vq_command = -10.0f;
+
+    // 전압 제한 수정 3번  (정상 동작)
+    //if(vd_command > 8.0f) vd_command = 8.0f;
+    //if(vd_command < -8.0f) vd_command = -8.0f;
+    //if(vq_command > 8.0f) vq_command = 8.0f;
+    //if(vq_command < -8.0f) vq_command = -8.0f;
+
+    if(vd_command > 11.0f) vd_command =11.0f;
+    if(vd_command < -11.0f) vd_command = -11.0f;
+    if(vq_command > 11.0f) vq_command = 11.0f;
+    if(vq_command < -11.0f) vq_command = -11.0f;
+
 
     // 가벼운 전압 필터링
     vd_smooth = 0.7f * vd_smooth + 0.3f * vd_command;
