@@ -4,14 +4,6 @@
  *  Created on: Aug 11, 2025
  *      Author: compro
  */
-
-
-/*
- * i2c_gpio.c
- *
- *  Created on: Aug 2, 2025
- *      Author: compro
- */
 #include "main.h"
 #include "i2c_gpio.h"
 #include <stdio.h>
